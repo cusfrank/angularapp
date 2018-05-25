@@ -1,0 +1,183 @@
+<button (click)="showUserForm = !showUserForm" class="btn btn-dark mb-3">
+  Add User
+</button>
+<div class="card card-body mb-3" *ngIf="showUserForm">
+  <h2>
+    Add User
+  </h2>
+  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)">
+    <div class="form-group">
+      <label>
+        First Name
+      </label>
+      <input type="text" [(ngModel)]="user.firstName" [ngClass]="{'is-invalid':userFirstName.errors && userFirstName.touched }"
+        class="form-control" name="firstName" #userFirstName="ngModel" required minlength="2">
+      <div [hidden]="!userFirstName.errors?.required" class="invalid-feedback">
+        First name required
+      </div>
+
+      <div [hidden]="!userFirstName.errors?.minlength" class="invalid-feedback">
+        Must be at least 2 characters
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label>
+        Last Name
+      </label>
+      <input type="text" [(ngModel)]="user.lastName" [ngClass]="{'is-invalid':userLastName.errors && userLastName.touched }" class="form-control"
+        name="lastName" #userLastName="ngModel" required minlength="2">
+      <div [hidden]="!userLastName.errors?.required" class="invalid-feedback">
+        Last name required
+      </div>
+
+      <div [hidden]="!userLastName.errors?.minlength" class="invalid-feedback">
+        Must be at least 2 characters
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        email
+      </label>
+
+      <input type="email" [(ngModel)]="user.email" [ngClass]="{'is-invalid':userEmail.errors && userEmail.touched }" class="form-control"
+        name="email" #userEmail="ngModel" required pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?">
+      <div [hidden]="!userEmail.errors?.pattern" class="invalid-feedback">
+        Email is not valid
+      </div>
+
+      <div [hidden]="!userEmail.errors?.minlength" class="invalid-feedback">
+        Must be at least 2 characters
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        Balance
+      </label>
+      <input type="number" [(ngModel)]="user.balance" [ngClass]="{'is-invalid':userBalance.errors && userBalance.touched }" class="form-control"
+        name="balance" #userBalance="ngModel" required type='number'>
+
+      <div [hidden]="!userBalance.errors?.required" class="invalid-feedback">
+        Please give me a number
+      </div>
+    </div>
+
+    <button [disabled]="!userForm.form.valid" class="btn btn-block mb-3" [ngClass]="userForm.form.valid?currentClasses:''">Add New User </button>
+  </form>
+</div>
+<ul class="list-unstyled" *ngIf="loaded && users?.length > 0;else noUsers">
+  <li class="card card-body mb-2" *ngFor="let user of users; let i = index "   [class.bg-light]="user.isActive"
+    [style.border-color]="user.isActive ? 'black':'' ">
+    <div class="row">
+      <div class="col-sm-4">
+        <img class="img-fluid" [src]="user.image" alt="" (click)="toggleHide(user)" (click)="user.updateMode = false">
+      </div>
+      <div class="col-sm-8">
+        <h3 [ngStyle]="user.hide?currentStyles:''">{{ user.firstName }} {{ user.lastName}}
+          <small>
+            <button (click)="toggleHide(user)" (click)="user.updateMode = false" class="btn btn-dark btn-xl">
+              <i [ngClass]="user.hide ? 'fa fa-plus': 'fa fa-minus'"></i>
+            </button>
+          </small>
+        </h3>
+        <ul class="list-group" *ngIf="!user.hide && !user.updateMode">
+          <li class="list-group-item">email: {{ user.email }}</li>
+          <li class="list-group-item">
+            balance: {{user.balance | currency:"CAD":"symbol"}}
+          </li>
+          <!-- <li class="list-group-item">
+            Joined: {{user.registered | date:"fullDate"}}
+          </li> -->
+          <button class="btn btn-success" (click)="user.updateMode=!user.updateMode">
+            Update
+          </button>
+
+          <button class="btn btn-danger" (click)="removeUser(i)">
+            Remove
+          </button>
+
+        </ul>
+
+        <ul class="list-group" *ngIf="!user.hide && user.updateMode">
+
+          <div class="card card-body mb-3">
+            <h2>
+              Update Here
+            </h2>
+            <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)">
+              <div class="form-group">
+                <label>
+                  First Name
+                </label>
+                <input type="text" [(ngModel)]="user.firstName" [ngClass]="{'is-invalid':userFirstName.errors && userFirstName.touched }"
+                  class="form-control" name="firstName" #userFirstName="ngModel" required minlength="2">
+                <div [hidden]="!userFirstName.errors?.required" class="invalid-feedback">
+                  First name required
+                </div>
+
+                <div [hidden]="!userFirstName.errors?.minlength" class="invalid-feedback">
+                  Must be at least 2 characters
+                </div>
+              </div>
+
+
+              <div class="form-group">
+                <label>
+                  Last Name
+                </label>
+                <input type="text" [(ngModel)]="user.lastName" [ngClass]="{'is-invalid':userLastName.errors && userLastName.touched }" class="form-control"
+                  name="lastName" #userLastName="ngModel" required minlength="2">
+                <div [hidden]="!userLastName.errors?.required" class="invalid-feedback">
+                  Last name required
+                </div>
+
+                <div [hidden]="!userLastName.errors?.minlength" class="invalid-feedback">
+                  Must be at least 2 characters
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  email
+                </label>
+
+                <input type="email" [(ngModel)]="user.email" [ngClass]="{'is-invalid':userEmail.errors && userEmail.touched }" class="form-control"
+                  name="email" #userEmail="ngModel" required pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?">
+                <div [hidden]="!userEmail.errors?.pattern" class="invalid-feedback">
+                  Email is not valid
+                </div>
+
+                <div [hidden]="!userEmail.errors?.minlength" class="invalid-feedback">
+                  Must be at least 2 characters
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Balance
+                </label>
+                <input type="number" [(ngModel)]="user.balance" [ngClass]="{'is-invalid':userBalance.errors && userBalance.touched }" class="form-control"
+                  name="balance" #userBalance="ngModel">
+                <div [hidden]="!userBalance.errors?.required" class="invalid-feedback">
+                  Balance required
+                </div>
+              </div>
+
+              <button [disabled]="!userForm.form.valid" class="btn btn-block mb-3" [ngClass]="userForm.form.valid?currentClasses:''"
+               (click)="user.updateMode=!user.updateMode"
+                (click)="toggleHide(user)">Finish </button>
+            </form>
+          </div>
+
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<!-- <ng-template #noUsers><h4>No Users Found</h4></ng-template> -->
+<h4 *ngIf="loaded && users?.length == 0">No Users Found</h4>
+<h4 *ngIf="!loaded">loading Users...</h4>
